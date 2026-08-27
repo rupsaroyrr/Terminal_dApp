@@ -447,7 +447,28 @@ Contributions are welcome! Please open an issue or submit a pull request.
 
 ---
 
+## 📝 Feedback Response
+
+- **Google Form Link**: [Feedback Form](https://docs.google.com/forms/d/e/1FAIpQLSfpIyNnoFna24LQwGOEkcER0n_Vj0Icr3K_ZdHpCUagKT_0oQ/viewform?usp=dialog)
+- **Spreadsheet Link**: [Feedback Responses Spreadsheet](https://docs.google.com/spreadsheets/d/1gU9PY_U9SCVP5ZKLNENx4FLaltiEv2y2xaVDKaWBkEY/edit?usp=sharing)
+
+| Timestamp | Name | Email | Wallet Address | Network | Product Rating | Did you face any bugs ? | Feedback for implementation/ other features |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 8/27/2026 7:57:40 | Subhranil | subhranilbaul@gmail.com | GBTOPBOVCF5652TCZMN4YDMSBTMYKX7HAA7LBMBBFFDBARZJIY5DHGIN | Testnet | 4 | No | This ensure lightning-fast, transparent aid disbursement, but integrating SEP-24 cash off-ramps (like MoneyGram) would make last-mile cashout much easier for non-crypto beneficiaries |
+| 8/27/2026 7:59:52 | Sonu Kumawat | sonu.k2004@gmail.com | GCPU2MBD5MYVTCBOUHLOMWULXRVNQTXRJAHWAMA2PRUSD2KHQSOQXAJE | Testnet | 5 | No | Payment terminal scanning is fast and responsive; adding an offline QR-signing queue would ensure reliability in disaster zones with intermittent internet |
+| 8/27/2026 8:04:38 | Ajay Prakash | ajay.prakash.kscf@gmail.com | GDLIFDB62PBW5XQ6L34NQV22NC6TD3MWQFXSMLCZIDQISFKMLPEWJZ3Q | Testnet | 1 | No | Great use of on-chain transparency for relief allocation; implementing multi-sig authorization for large emergency treasury releases would add crucial security |
+| 8/27/2026 8:10:40 | Vijay Kumar | vkumarofficial@gmail.com | GCSEXEF4EJCOLPRWCXUYEYENMJXTMLSI55RYNTW6FEEUAN6XZSM6PRXL | Testnet | 2 | No | The smart contract routing delivers aid efficiently without middleman cuts, but adding category-restricted merchant vouchers would ensure funds are spent solely on essential relief supplies |
+| 8/27/2026 8:15:33 | Shashank Rai | shashankrai932@gmail.com | GBQMA5C3GCWF3ZSPUS5YANPTPCKVMJME25KPVIBU2Z3PMYQHUEMXM7QK | Testnet | 1 | No | Subcent gas fees and instant settlement work great at checkout adding automated SMS payment confirmation notifications would improve accessibility for users with feature phones |
+| 8/27/2026 8:34:50 | yogesh taparia | yogeshdesi007@gmail.com | GBN7I2WIYWSPCXSZGBMS4IQYCS2Q7R377BAN3PWRSWFGTUNZ6C46GHHL | Testnet | 1 | No | Disbursement speed on Stellar is unmatched, though adding native batch-payment processing would help distribute aid to thousands of recipients simultaneously |
+| 8/27/2026 8:44:26 | Anshika | ansghost2006@gmail.com | GBQ4VX4AIRH4USB3ATCGMZAZ4CXLITVTA7LRA4MOEJVTFRWRMJACKREX | Testnet | 1 | No | The POS scanning flow is snappy; integrating biometric or NFC touch-to-pay would make local merchant checkouts even faster |
+| 8/27/2026 8:49:42 | Anjali Sen | rani.anjali2004@gmail.com | GCZRZHQJVFSAT7DILIQYBEOUE75M3AH6D3HPSDQEYSOLJF24RWJ5EJED | Testnet | 1 | No | Real-time donor tracking provides great transparency; introducing verifiable zero-knowledge credentials could protect beneficiary privacy on-chain |
+| 8/27/2026 8:56:59 | Sumit sharma | sumit.sharma99608@gmail.com | GBURZNBRT3YUFBPKRRTP67XKATGXVUDOEKBPNAT4VNHBVW4U6MIECUJY | Testnet | 1 | No | Transaction finality is great on testnet, but adding automated fiat-pegged ledger exports would simplify NGO auditing and regulatory reporting |
+| 8/27/2026 9:02:03 | Amit jaiswal | jaiswalamit.rajput@gmail.com | GCJ54H57MA5BO7EZQRLCEXFVKQI5RFIXLXP6IWIQLB6SN2WOEOHGRU46 | Testnet | 1 | No | The terminal UI is clean, but introducing a high-contrast, low-bandwidth mode would ensure smooth operation on low-end mobile devices in the field |
+
+---
+
 <p align="center">
   <b>Stellar Network Payment Terminal</b> — Built with ❤️ on the Stellar Testnet
 </p>
+
 

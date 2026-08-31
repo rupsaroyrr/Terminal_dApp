@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stellar Terminal dApp — Complete Technical Documentation</title>
+  <meta name="description" content="Master documentation portal for the Stellar Network Payment Terminal & Soroban Smart Contract dApp. Architecture, contracts, CLI, setup, and diagnostics.">
+  <meta name="keywords" content="Stellar, Soroban, dApp, Terminal, Payment Terminal, Freighter, Web3, Smart Contracts, Rust, Vitest">
+  <meta name="author" content="Stellar Management Hub Team">
+
+  <!-- OpenGraph Meta Tags -->
+  <meta property="og:title" content="Stellar Terminal dApp — Complete Technical Documentation">
+  <meta property="og:description" content="Complete documentation covering architecture, Soroban contracts, CLI reference, setup, and diagnostics for the Stellar Network Payment Terminal.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <!-- Mermaid.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-card-border: rgba(255, 255, 255, 0.08);
+      --accent: #00f0ff;
+      --accent-glow: rgba(0, 240, 255, 0.25);
+      --accent-secondary: #7000ff;
+      --success: #00ff9d;
+      --warning: #ffd166;
+      --error: #ff4d4d;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --sidebar-width: 280px;
+      --header-height: 70px;
+      --font-heading: 'Outfit', 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius: 12px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Theme Overrides */
+    body[data-theme="matrix"] {
+      --accent: #00ff66;
+      --accent-glow: rgba(0, 255, 102, 0.25);
+      --accent-secondary: #008833;
+    }
+    body[data-theme="amber"] {
+      --accent: #ffb000;
+      --accent-glow: rgba(255, 176, 0, 0.25);
+      --accent-secondary: #cc6600;
+    }
+    body[data-theme="cyber"] {
+      --accent: #d946ef;
+      --accent-glow: rgba(217, 70, 239, 0.25);
+      --accent-secondary: #8b5cf6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      color-scheme: dark;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(112, 0, 255, 0.05) 0%, transparent 40%);
+      background-attachment: fixed;
+    }
+
+    /* CRT Scanline overlay */
+    .crt-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+      background-size: 100% 4px;
+      z-index: 999;
+      pointer-events: none;
+      opacity: 0.3;
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-height);
+      background: rgba(7, 9, 14, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--bg-card-border);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-main);
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #000;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 30%, var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-badge {
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      background: rgba(0, 240, 255, 0.1);
+      color: var(--accent);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 2px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Search Input */
+    .search-box {
+      position: relative;
+      width: 280px;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem 0.5rem 2.2rem;
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .search-box input:focus {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      pointer-events: none;
+      font-size: 0.9rem;
+    }
+
+    /* Theme Switcher */
+    .theme-select {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 8px;
+      color: var(--text-main);
+      padding: 0.45rem 0.75rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      outline: none;
+      font-family: var(--font-body);
+    }
+
+    .theme-select option {
+      background: #0f172a;
+      color: #fff;
+    }
+
+    /* Main Container */
+    .app-layout {
+      display: flex;
+      margin-top: var(--header-height);
+      min-height: calc(100vh - var(--header-height));
+    }
+
+    /* Sidebar Navigation */
+    aside.sidebar {
+      width: var(--sidebar-width);
+      position: fixed;
+      top: var(--header-height);
+      bottom: 0;
+      left: 0;
+      background: rgba(10, 14, 22, 0.6);
+      backdrop-filter: blur(10px);
+      border-right: 1px solid var(--bg-card-border);
+      padding: 1.5rem 1rem;
+      overflow-y: auto;
+      z-index: 90;
+    }
+
+    .nav-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .nav-title {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .nav-links {
+      list-style: none;
+    }
+
+    .nav-links li a {
+      display: block;
+      padding: 0.45rem 0.75rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      transition: var(--transition);
+    }
+
+    .nav-links li a:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateX(4px);
+    }
+
+    .nav-links li a.active {
+      color: var(--accent);
+      background: rgba(0, 240, 255, 0.1);
+      font-weight: 600;
+      border-left: 3px solid var(--accent);
+    }
+
+    /* Main Content Area */
+    main.content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 2.5rem 3rem 5rem 3rem;
+      max-width: 1100px;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.6));
+      border: 1px solid var(--bg-card-border);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      margin-bottom: 3rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; width: 300px; height: 100%;
+      background: linear-gradient(90deg, transparent, var(--accent-glow));
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #ffffff 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 750px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .hero-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-dim);
+    }
+
+    .hero-meta-item span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Section Component */
+    section.doc-section {
+      margin-bottom: 4rem;
+      scroll-margin-top: calc(var(--header-height) + 1.5rem);
+    }
+
+    h2.section-heading {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--bg-card-border);
+      padding-bottom: 0.75rem;
+    }
+
+    h2.section-heading .heading-num {
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+    }
+
+    h3.subheading {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 2rem 0 1rem 0;
+      color: #fff;
+    }
+
+    p {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+
+    /* Glass Cards Grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      transition: var(--transition);
+      backdrop-filter: blur(12px);
+    }
+
+    .glass-card:hover {
+      border-color: rgba(0, 240, 255, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .glass-card h4 {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .glass-card p {
+      font-size: 0.9rem;
+      margin-bottom: 0;
+    }
+
+    /* Tables */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: var(--radius);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.04);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 1rem;
+      border-bottom: 1px solid var(--bg-card-border);
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-main);
+    }
+
+    code {
+      font-family: var(--font-mono);
+      background: rgba(0, 240, 255, 0.1);
+      color: var(--accent);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+
+    /* Code Blocks */
+    .code-block-wrapper {
+      position: relative;
+      margin: 1.5rem 0;
+      border-radius: var(--radius);
+      border: 1px solid var(--bg-card-border);
+      overflow: hidden;
+      background: #090d16;
+    }
+
+    .code-header {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--bg-card-border);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: var(--text-muted);
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .copy-btn:hover {
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+    }
+
+    pre {
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+
+    /* Interactive CLI Sandbox */
+    .cli-sandbox {
+      background: #05070b;
+      border: 1px solid var(--accent-glow);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 2rem 0;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    }
+
+    .cli-header {
+      background: #0f172a;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cli-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .cli-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+    .dot-red { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #27c93f; }
+
+    .cli-body {
+      padding: 1.25rem;
+      min-height: 220px;
+      max-height: 350px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .cli-output-line {
+      margin-bottom: 0.4rem;
+      word-break: break-all;
+    }
+
+    .cli-input-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .cli-prompt {
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+
+    .cli-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      outline: none;
+    }
+
+    /* Mermaid diagrams container */
+    .mermaid-box {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Alerts */
+    .alert {
+      border-left: 4px solid var(--accent);
+      background: rgba(0, 240, 255, 0.05);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .alert-warning {
+      border-left-color: var(--warning);
+      background: rgba(255, 209, 102, 0.05);
+    }
+
+    .alert-title {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+      color: #fff;
+    }
+
+    /* Floating Back to top */
+    .back-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 20px var(--accent-glow);
+      transition: var(--transition);
+      opacity: 0;
+      visibility: hidden;
+      z-index: 80;
+    }
+
+    .back-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .back-top:hover {
+      transform: translateY(-3px) scale(1.05);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      aside.sidebar {
+        display: none;
+      }
+      main.content {
+        margin-left: 0;
+        padding: 1.5rem;
+      }
+      .search-box {
+        width: 180px;
+      }
+    }
+  </style>
+</head>
+<body data-theme="slate">
+
+  <div class="crt-overlay"></div>
+
+  <!-- Header -->
+  <header>
+    <a href="#" class="brand">
+      <div class="brand-logo">S</div>
+      <div>
+        <span class="brand-title">Stellar Terminal</span>
+        <span class="brand-badge">Testnet v2.0</span>
+      </div>
+    </a>
+
+    <div class="header-actions">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search documentation..." onkeyup="filterDocSections()">
+      </div>
+
+      <select class="theme-select" id="themeSelect" onchange="changeTheme(this.value)">
+        <option value="slate">Theme: Slate</option>
+        <option value="matrix">Theme: Matrix</option>
+        <option value="amber">Theme: CRT Amber</option>
+        <option value="cyber">Theme: Cyber Deep</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- Layout -->
+  <div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="nav-group">
+        <div class="nav-title">Getting Started</div>
+        <ul class="nav-links">
+          <li><a href="#overview" class="active">1. Overview & Features</a></li>
+          <li><a href="#architecture">2. Architecture & Design</a></li>
+          <li><a href="#contracts">3. Soroban Contracts</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-title">Features & Modules</div>
+        <ul class="nav-links">
+          <li><a href="#ui-modules">4. UI & Features</a></li>
+          <li><a href="#cli-reference">5. Interactive CLI</a></li>
+          <li><a href="#utilities">6. Utility Services</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-title">Developer Guide</div>
+        <ul class="nav-links">
+          <li><a href="#setup">7. Installation & Setup</a></li>
+          <li><a href="#deployment">8. Contract Deployment</a></li>
+          <li><a href="#testing">9. Automated Vitest</a></li>
+          <li><a href="#faq">10. Troubleshooting FAQ</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+
+      <!-- Hero Banner -->
+      <div class="hero">
+        <h1>Stellar Payment Terminal dApp</h1>
+        <p>Master Technical & Operational Documentation for the Stellar Testnet & Soroban Smart Contract Ecosystem.</p>
+        <div class="hero-meta">
+          <div class="hero-meta-item">Network: <span>Stellar Testnet</span></div>
+          <div class="hero-meta-item">Engine: <span>Soroban Wasm</span></div>
+          <div class="hero-meta-item">Wallet: <span>StellarWalletsKit</span></div>
+          <div class="hero-meta-item">Standard: <span>SEP-0007</span></div>
+        </div>
+      </div>
+
+      <!-- Section 1: Executive Overview -->
+      <section id="overview" class="doc-section">
+        <h2 class="section-heading"><span class="heading-num">01.</span> Executive Overview & Features</h2>
+        <p>The <strong>Stellar Network Payment Terminal</strong> is a dystopian-themed, high-density Web3 application unifying native Stellar payments, Soroban smart contract interactions, multi-pay batch execution, interactive diagnostics, and digital asset marketplaces.</p>
+
+        <div class="card-grid">
+          <div class="glass-card">
+            <h4>🔗 Multi-Wallet Uplink <span>⚡</span></h4>
+            <p>Seamlessly connects Freighter, Rabe, Hana, xBull, and Albedo wallets using a unified modal provider.</p>
+          </div>
+          <div class="glass-card">
+            <h4>🛡️ Soroban Relief Protocol <span>📜</span></h4>
+            <p>Pools communal funds transparently via <code>TranscendenceContract</code> with real-time goal tracking.</p>
+          </div>
+          <div class="glass-card">
+            <h4>🏪 NFT Marketplace (ICC) <span>💎</span></h4>
+            <p>Inter-contract communication between USD-calibrated <code>NFTShop</code> and tokenized <code>StellarNFT</code>.</p>
+          </div>
+          <div class="glass-card">
+            <h4>📱 SEP-0007 Split Engine <span>📐</span></h4>
+            <p>Generates shareable payment URIs and live QR codes for instant communal expense settlement.</p>
+          </div>
+          <div class="glass-card">
+            <h4>🧪 Admin Diagnostics Suite <span>⚙️</span></h4>
+            <p>Interacts with Soroban RPC to test Wasm security bounds (Malicious init, Pause toggle, Auth traps).</p>
+          </div>
+          <div class="glass-card">
+            <h4>🎯 Hunters Protocol <span>📊</span></h4>
+            <p>Triple-redundant whale telemetry scanner combining StellarExpert, ledger scanning, and local fallbacks.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Architecture & Design -->
+      <section id="architecture" class="doc-section">
+        <h2 class="section-heading"><span class="heading-num">02.</span> Tech Stack & Architecture</h2>
+        <p>The dApp is engineered with a modular, zero-layout-shift architecture optimized for rapid monitoring and high-concurrency RPC queries.</p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Technology</th>
+                <th>Version</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Frontend UI</td>
+                <td>React + Vite</td>
+                <td>React 19, Vite 5</td>
+                <td>Application layer & interactive components</td>
+              </tr>
+              <tr>
+                <td>Stellar Interface</td>
+                <td>@stellar/stellar-sdk</td>
+                <td>^15.0.1</td>
+                <td>Transaction building, XDR encoding, Horizon client</td>
+              </tr>
+              <tr>
+                <td>Wallet Gateway</td>
+                <td>StellarWalletsKit</td>
+                <td>^1.9.5</td>
+                <td>Multi-provider browser extension connector</td>
+              </tr>
+              <tr>
+                <td>Smart Contracts</td>
+                <td>Rust / Soroban SDK</td>
+                <td>wasm32v1-none</td>
+                <td>On-chain execution & event emission</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="subheading">Hunters Protocol Workflow</h3>
+        <div class="mermaid-box">
+          <div class="mermaid">
+          graph TD
+              A[Telemetry Request] --> B{Valid sessionStorage Cache?}
+              B -- Yes --> C[Render from sessionStorage Cache]
+              B -- No --> D[Tier 1: Query StellarExpert API]
+              D --> E{StellarExpert Available?}
+              E -- Yes --> F[Merge & Cache Results]
+              E -- No --> G[Tier 2: Discovery Engine - Scan Last 50 Ledgers]
+              G --> H[Query Horizon Balances]
+              H --> I{Accounts Found?}
+              I -- Yes --> F
+              I -- No --> J[Tier 3: Registry Fail-Safe]
+              J --> F
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Soroban Smart Contracts -->
+      <section id="contracts" class="doc-section">
+        <h2 class="section-heading"><span class="heading-num">03.</span> Soroban Smart Contract Directory</h2>
+        <p>The ecosystem is powered by three compiled Rust Wasm smart contracts deployed on the <strong>Stellar Testnet</strong>.</p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Contract Name</th>
+                <th>Contract Address (C-Address)</th>
+                <th>WASM Checksum SHA-256</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>TranscendenceContract</strong></td>
+                <td><code>CB73TNAHPLIHS2FPCNCUERLDUEPA4QPYA2CSCSV6PFVZMSCI47ESKSLJ</code></td>
+                <td><code>0a09d7115baa8e9586a94479...</code></td>
+              </tr>
+              <tr>
+                <td><strong>StellarNFT</strong></td>
+                <td><code>CCT5ZLD3XYI3SQMOAW5KSW3RIHFVMHLCLOQSLUPMBQR5BXXH5VMIDMZB</code></td>
+                <td><code>ae79126fde2fcdfdc8ff2161...</code></td>
+              </tr>
+              <tr>
+                <td><strong>NFTShop</strong></td>
+                <td><code>CBW4ZRVEO3Q6J76HX7JY47H7WIJANZKNJPUQ2H2QS4ZO46DE6V4CTBJG</code></td>
+                <td><code>f209e46f6659fbab870a6939...</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Section 4: UI & Feature Modules -->
+      <section id="ui-modules" class="doc-section">
+        <h2 class="section-heading"><span class="heading-num">04.</span> User Interface & Feature Modules</h2>
+        <p>Explore the specialized frontend modules designed for maximum control and transaction transparency.</p>
+
+        <div class="alert">
+          <div class="alert-title">💡 Standard Protocol Calibration</div>
+          All marketplace assets are fixed to a baseline exchange rate of <strong>$1 USD = 6 XLM</strong> to maintain pricing stability across Testnet iterations.
+        </div>
+
+        <div class="card-grid">
+          <div class="glass-card">
+            <h4>Multi-Pay Script Engine</h4>
+            <p>Enter multiline payment targets to execute parallel transfers in a single operation with per-recipient status indicators.</p>
+          </div>
+          <div class="glass-card">
+            <h4>Persistent Theme Engine</h4>
+            <p>Seamlessly switch between Slate, Matrix, Amber, and Cyber themes saved directly to <code>localStorage</code>.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Interactive Terminal CLI Reference -->
+      <section id="cli-reference" class="doc-section">
+        <h2 class="section-heading"><span class="heading-num">05.</span> Interactive Terminal CLI Reference</h2>
+        <p>Try out the built-in Terminal CLI simulator right here on the documentation site:</p>
+
+        <!-- CLI Sandbox Component -->
+        <div class="cli-sandbox">
+          <div class="cli-header">
+            <div class="cli-dots">
+              <div class="cli-dot dot-red"></div>
+              <div class="cli-dot dot-yellow"></div>
+              <div class="cli-dot dot-green"></div>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; color: #94a3b8;">STELLAR-CLI-SIMULATOR v2.0</span>
+          </div>
+          <div class="cli-body" id="cliOutput">
+            <div class="cli-output-line" style="color: var(--accent);">[SYSTEM] Interactive Stellar Terminal Simulator initialized.</div>
+            <div class="cli-output-line" style="color: var(--text-dim);">Type 'help' to view available commands.</div>
+          </div>
+          <div class="cli-input-row">
+            <span class="cli-prompt">stellar-terminal&gt;</span>
+            <input type="text" class="cli-input" id="cliInput" placeholder="Type a command (e.g. help, status, balance)..." onkeydown="handleCliInput(event)">
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6: Utility Services -->
+      <section id="utilities" class="doc-section">
+        <h2 class="section-heading"><span class="heading-num">06.</span> Utility Services & Core Modules</h2>
+        
+        <div class="code-block-wrapper">
+          <div class="code-header">
+            <span>src/utils/retryHelper.js — Exponential Backoff</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+          </div>
+          <pre><code>export async function withRetry(fn, options = {}) {
+  const { maxRetries = 3, initialDelayMs = 300, backoffFactor = 2 } = options;
+  let attempt = 0, delay = initialDelayMs;
+
+  while (true) {
+    try {
+      return await fn();
+    } catch (error) {
+      attempt += 1;
+      if (attempt > maxRetries) throw error;
+      await new Promise(r => setTimeout(r, delay));
+      delay *= backoffFactor;
+    }
+  }
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- Section 7: Setup & Installation -->
+      <section id="setup" class="doc-section">
+        <h2 class="section-heading"><span class="heading-num">07.</span> Installation & Setup Guide</h2>
+        
+        <div class="code-block-wrapper">
+          <div class="code-header">
+            <span>Terminal Shell Commands</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy Commands</button>
+          </div>
+          <pre><code># Clone project repository
+git clone https://github.com/rupsaroyrr/Terminal_dApp.git
+cd Terminal_dApp
+
+# Install node dependencies
+npm install
+
+# Start Vite dev server
+npm run dev</code></pre>
+        </div>
+      </section>
+
+      <!-- Section 8: Deployment -->
+      <section id="deployment" class="doc-section">
+        <h2 class="section-heading"><span class="heading-num">08.</span> Smart Contract Deployment</h2>
+        <p>Deploy custom Soroban WASM binaries to Stellar Testnet using the Node deployment protocol:</p>
+        
+        <div class="code-block-wrapper">
+          <div class="code-header">
+            <span>PowerShell / Bash Deployment</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code># Set deployer secret key env variable
+$env:STELLAR_SECRET="SXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+
+# Run deployment script
+node deploy.js</code></pre>
+        </div>
+      </section>
+
+      <!-- Section 9: Automated Vitest -->
+      <section id="testing" class="doc-section">
+        <h2 class="section-heading"><span class="heading-num">09.</span> Automated Vitest Suite</h2>
+        <p>Execute unit tests to verify Oracle pricing, retry logic, command history deduplication, and filter algorithms.</p>
+        
+        <div class="code-block-wrapper">
+          <div class="code-header">
+            <span>Run Vitest Suite</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code>npm run test</code></pre>
+        </div>
+      </section>
+
+      <!-- Section 10: FAQ -->
+      <section id="faq" class="doc-section">
+        <h2 class="section-heading"><span class="heading-num">10.</span> Troubleshooting FAQ</h2>
+
+        <div class="glass-card" style="margin-bottom: 1rem;">
+          <h4>Q: How do I test the Admin Diagnostics Panel?</h4>
+          <p>Connect your wallet using the deployer address <code>GBJB6GI3RUZGFRHXXTGW6CR646DV64BHJEVOTQFKLZMU6OF4QJHKFJOQ</code>. The admin-only <code>⚠ DIAGNOSTICS</code> tab will automatically decrypt in the UI.</p>
+        </div>
+
+        <div class="glass-card">
+          <h4>Q: What should I do if Horizon RPC throws rate limit errors?</h4>
+          <p>The dApp's <code>sessionStorage</code> caching layer (60m TTL) and <code>withRetry</code> backoff helper automatically absorb transient rate limits. You can also configure custom RPC nodes in <strong>Network Settings</strong>.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Floating Back to Top Button -->
+  <button class="back-top" id="backTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</button>
+
+  <script>
+    // Initialize Mermaid diagrams
+    if (window.mermaid) {
+      mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    }
+
+    // Scroll active link highlight & back-to-top button visibility
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('section.doc-section');
+      const navLinks = document.querySelectorAll('.nav-links li a');
+      const backTopBtn = document.getElementById('backTopBtn');
+
+      if (window.scrollY > 300) {
+        backTopBtn.classList.add('visible');
+      } else {
+        backTopBtn.classList.remove('visible');
+      }
+
+      let current = '';
+      sections.forEach(sec => {
+        const top = sec.offsetTop - 100;
+        if (window.scrollY >= top) {
+          current = sec.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+          link.classList.add('active');
+        }
+      });
+    });
+
+    // Theme selector
+    function changeTheme(themeName) {
+      document.body.setAttribute('data-theme', themeName);
+    }
+
+    // Filter documentation sections via live search
+    function filterDocSections() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const sections = document.querySelectorAll('section.doc-section');
+
+      sections.forEach(sec => {
+        const text = sec.innerText.toLowerCase();
+        if (text.includes(query)) {
+          sec.style.display = 'block';
+        } else {
+          sec.style.display = 'none';
+        }
+      });
+    }
+
+    // Copy Code Helper
+    function copyCode(btn) {
+      const wrapper = btn.closest('.code-block-wrapper');
+      const codeText = wrapper.querySelector('pre code').innerText;
+      navigator.clipboard.writeText(codeText).then(() => {
+        const orig = btn.innerText;
+        btn.innerText = 'Copied!';
+        btn.style.background = '#00ff9d';
+        btn.style.color = '#000';
+        setTimeout(() => {
+          btn.innerText = orig;
+          btn.style.background = '';
+          btn.style.color = '';
+        }, 2000);
+      });
+    }
+
+    // Interactive CLI Simulator Logic
+    function handleCliInput(e) {
+      if (e.key === 'Enter') {
+        const input = e.target.value.trim();
+        if (!input) return;
+        
+        const outputContainer = document.getElementById('cliOutput');
+        
+        // Render user prompt
+        const promptLine = document.createElement('div');
+        promptLine.className = 'cli-output-line';
+        promptLine.innerHTML = `<span style="color:var(--accent);">stellar-terminal&gt;</span> ${escapeHtml(input)}`;
+        outputContainer.appendChild(promptLine);
+
+        // Process CLI command
+        const args = input.split(' ');
+        const cmd = args[0].toLowerCase();
+        const resLine = document.createElement('div');
+        resLine.className = 'cli-output-line';
+
+        switch (cmd) {
+          case 'help':
+            resLine.style.color = '#00ff9d';
+            resLine.innerHTML = `Available Commands:<br>` +
+              `- status : Check RPC & Horizon latency<br>` +
+              `- balance &lt;address&gt; : Query XLM balance<br>` +
+              `- mint &lt;id&gt; &lt;uri&gt; : Mint Soroban NFT<br>` +
+              `- buy &lt;id&gt; &lt;usd&gt; : Purchase marketplace NFT<br>` +
+              `- clear : Clear terminal screen`;
+            break;
+          case 'status':
+            resLine.style.color = '#00ff9d';
+            resLine.innerHTML = `[OK] Horizon Node Latency: 38ms | Soroban RPC: 95ms (Testnet Operational)`;
+            break;
+          case 'balance':
+            const addr = args[1] || 'GBJB6GI3RUZGFRHXXTGW6CR646DV64BHJEVOTQFKLZMU6OF4QJHKFJOQ';
+            resLine.style.color = '#ffd166';
+            resLine.innerHTML = `Balance for ${addr.substring(0, 8)}...: 10,450.80 XLM`;
+            break;
+          case 'mint':
+            resLine.style.color = '#00f0ff';
+            resLine.innerHTML = `[TX SUCCESS] Minted NFT #${args[1] || '1'} to ${args[2] || 'ipfs://bafy...'}`;
+            break;
+          case 'buy':
+            resLine.style.color = '#00f0ff';
+            resLine.innerHTML = `[TX SUCCESS] Executed NFTShop.buy_nft(#${args[1] || '1'}, $${args[2] || '25.00'})`;
+            break;
+          case 'clear':
+            outputContainer.innerHTML = '';
+            e.target.value = '';
+            return;
+          default:
+            resLine.style.color = '#ff4d4d';
+            resLine.innerText = `Command not recognized: '${cmd}'. Type 'help' for command list.`;
+        }
+
+        outputContainer.appendChild(resLine);
+        outputContainer.scrollTop = outputContainer.scrollHeight;
+        e.target.value = '';
+      }
+    }
+
+    function escapeHtml(text) {
+      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+  </script>
+</body>
+</html>
